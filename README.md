@@ -24,7 +24,7 @@ This script automates the creation of a new project by copying a template direct
 
 - **Python 3**: The script is written in Python and requires Python 3 to run.
 - **Template Directory**: A `template` directory must exist in the same location as the script.
-- **oss-cad-suite**: OSS CAD Suite is a binary software distribution for a number of open source software used in digital logic design. ⚠️ needed in **~/**
+- **oss-cad-suite**: OSS CAD Suite is a binary software distribution for a number of open source software used in digital logic design. ⚠️ needed in **~/oss-cad-suite**
 
 ---
 
