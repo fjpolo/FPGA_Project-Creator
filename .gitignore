@@ -1,5 +1,7 @@
 *.vcd
 *.txt
+*.pyc
 
 obj_dir/
 sim_build/
+database/
