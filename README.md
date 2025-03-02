@@ -71,18 +71,18 @@ Example:
 
 .
 ├── template
-│   ├── include
-│       ├── template.h
-│   ├── python
-│       ├── design.py
-│   ├── rtl
-│       ├── template.v
-│   ├── src
-│       ├── template.c
-│       ├── template.cpp
-│   ├── test_fw
-│   ├── test_py
-│   ├── test_rtl
+    ├── include
+    │   ├── template.h
+    ├── python
+    │   ├── design.py
+    ├── rtl
+    │   ├── template.v
+    ├── src
+    │   ├── template.c
+    │   ├── template.cpp
+    ├── test_fw
+    ├── test_py
+    ├── test_rtl
         ├── equivalence
         ├── formal
         │   ├── template
