@@ -1,0 +1,5 @@
+*.vcd
+*.txt
+
+obj_dir/
+sim_build/
