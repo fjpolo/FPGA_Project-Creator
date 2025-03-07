@@ -1,7 +1,6 @@
 *.vcd
 *.txt
 *.pyc
-*_log*
 
 obj_dir/
 sim_build/
