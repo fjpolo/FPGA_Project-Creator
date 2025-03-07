@@ -15,14 +15,20 @@ for dir in */; do
     echo "[MUTATION] Running $dir/run.sh..."
 
     # Run the run.sh script and capture the exit status
-    (cd "$dir" && ./run.sh >> template_log.txt)
+    (cd "$dir" && ./run.sh >> average_filter_log.txt)
     exit_status=$?
+
+    # Check for EQGAP and FMONLY
+    if grep -q "mutations as" ${PWD}/${dir}/average_filter_log.txt; then
+      echo "[MUTATION] Failed. Exiting script."
+      exit 1
+    fi
 
     # Check if the script failed
     if [ $exit_status -ne 0 ]; then
-      echo "[MUTATION] template failed!"
+      echo "[MUTATION] average_filter failed!"
     else
-      echo "[MUTATION] template passed!"
+      echo "[MUTATION] average_filter passed!"
     fi
   else
     echo "[MUTATION] No run.sh found in $dir"
