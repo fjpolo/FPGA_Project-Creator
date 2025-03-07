@@ -37,6 +37,8 @@ if grep PASS sim.out && ! grep ERROR sim.out; then
 	echo "1 PASS" > output.txt
 elif grep FAIL sim.out; then
 	echo "1 FAIL" > output.txt
+elif !grep PASS sim.out && grep FAIL sim.out; then
+	echo "1 FAIL" > output.txt
 else
 	echo "1 ERROR" > output.txt
 fi
