@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Source the OSS CAD Suite environment
-echo "[LINT][VERILATOR] Sourcing OSS CAD Suite environment..."
+echo "    [LINT] Sourcing OSS CAD Suite environment..."
 source ~/oss-cad-suite/environment
 if [ $? -ne 0 ]; then
-    echo "[LINT][VERILATOR] Failed to source OSS CAD Suite environment. Exiting script."
+    echo "    [LINT] Failed to source OSS CAD Suite environment. Exiting script."
     exit 1
 fi
 
@@ -12,7 +12,7 @@ fi
 for dir in */; do
   # Check if the directory contains a run.sh script
   if [ -f "$dir/run.sh" ]; then
-    echo "[LINT][VERILATOR] Running $dir/run.sh..."
+    echo "    [LINT] Running $dir/run.sh..."
 
     # Run the run.sh script and capture the exit status
     (cd "$dir" && ./run.sh >> template_log.txt)
@@ -20,11 +20,11 @@ for dir in */; do
 
     # Check if the script failed
     if [ $exit_status -ne 0 ]; then
-      echo "[LINT][VERILATOR] template failed!"
+      echo "    [LINT] FAIL: template failed!"
     else
-      echo "[LINT][VERILATOR] template passed!"
+      echo "    [LINT] PASS: template passed!"
     fi
   else
-    echo "[LINT][VERILATOR] No run.sh found in $dir"
+    echo "    [LINT] ERROR: No run.sh found in $dir"
   fi
 done
