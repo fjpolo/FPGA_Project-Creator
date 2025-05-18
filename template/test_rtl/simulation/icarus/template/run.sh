@@ -31,7 +31,7 @@ fi
 
 # Run the simulation and generate waveform
 echo "        [ICARUS] Running simulation and generating waveform..."
-vvp "$OUTPUT" -lxt2
+vvp "$OUTPUT" +fst
 
 # Check if simulation was successful
 if [ $? -ne 0 ]; then
