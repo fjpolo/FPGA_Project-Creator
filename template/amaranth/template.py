@@ -111,6 +111,8 @@ top = template(25)
 with open("template.v", "w") as f:
     f.write(verilog.convert(top))
 
-
+########
+# main #
+########
 if __name__ == "__main__":
     main(template)
