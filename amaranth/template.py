@@ -1,6 +1,8 @@
 from amaranth import *
 from amaranth.lib import wiring
 from amaranth.lib.wiring import In, Out
+from amaranth.sim import Simulator, Period
+from amaranth.back import verilog
 
 ###############
 # Main module #
@@ -28,7 +30,7 @@ class template(wiring.Component):
 
     def __init__(self, limit):
         self.limit = limit
-        self.count = Signal(16)
+        self.count = Signal(16, name="count") # Added name for clarity in traces/formal
 
         super().__init__()
 
@@ -45,9 +47,6 @@ class template(wiring.Component):
 
         return m
 # --- TEST ---
-from amaranth.sim import Simulator, Period
-
-
 dut = template(25)
 async def bench(ctx):
     # Disabled counter should not overflow.
@@ -74,16 +73,65 @@ async def bench(ctx):
 sim = Simulator(dut)
 sim.add_clock(Period(MHz=1))
 sim.add_testbench(bench)
-with sim.write_vcd("up_counter.vcd"):
+with sim.write_vcd("template.vcd"):
     sim.run()
 # --- CONVERT ---
-from amaranth.back import verilog
-
-
 top = template(25)
-with open("up_counter.v", "w") as f:
+with open("template.v", "w") as f:
     f.write(verilog.convert(top))
 
-########################
-# Foprmal Verification #
-########################
+#######################
+# Formal Verification #
+#######################
+from amaranth.asserts import Assert, Assume, Cover # These might still be here (deprecated but present)
+from amaranth.hdl import Past, Rose, Fell, Stable # Past, Rose, Fell, Stable are now in amaranth.hdl
+from amaranth.cli import main_parser, main_runner
+
+if __name__ == "__main__":
+    parser = main_parser()
+    args = parser.parse_args()
+
+    m = Module()
+    m.submodules.counter = counter = template(limit=25)
+
+    # --- Formal Properties ---
+
+    # Assert: Define properties that must *always* be true.
+
+    # 1. If enable is low, count does not change.
+    # This assertion ensures that if 'en' was low in the previous cycle, 'count' remains unchanged.
+    # If 'en' just rose, the counter starts counting from the next cycle, so this doesn't apply.
+    m.d.sync += Assert((counter.count == Past(counter.count, 1)) | (counter.en & ~Past(counter.en, 1)))
+
+
+    # 2. If enable is high AND not overflow, count increments.
+    m.d.sync += Assert(
+        (counter.en & ~counter.ovf).implies(counter.count == Past(counter.count, 1) + 1)
+    )
+
+    # 3. If enable is high AND overflow, count resets to 0.
+    m.d.sync += Assert(
+        (counter.en & counter.ovf).implies(counter.count == 0)
+    )
+
+    # 4. Overflow is asserted only when count reaches limit.
+    m.d.comb += Assert(counter.ovf.implies(counter.count == counter.limit))
+
+
+    # Cover: Define scenarios you want to see covered by the formal tool.
+
+    # 1. Cover the counter reaching its limit (ovf going high).
+    m.d.sync += Cover(counter.ovf & ~Past(counter.ovf, 1)) # Explicit Rose definition
+
+    # 2. Cover the counter incrementing.
+    m.d.sync += Cover(counter.count == Past(counter.count, 1) + 1) # More explicit than Rose(counter.count)
+
+    # 3. Cover the counter resetting after overflow.
+    # ovf goes high AND count goes low (due to reset).
+    m.d.sync += Cover((counter.ovf & ~Past(counter.ovf, 1)) & (counter.count == 0)) # Explicit Rose and Fell
+
+    # 4. Cover the counter being enabled and NOT overflowing yet.
+    m.d.sync += Cover(counter.en & ~counter.ovf)
+
+    # Pass the module and its ports to the main runner.
+    main_runner(parser, args, m, ports=[] + counter.ports())
