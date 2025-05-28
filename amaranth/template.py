@@ -1,8 +1,16 @@
-from amaranth import *
+# Disable pylint's "your name is too short" warning.
+# pylint: disable=C0103from amaranth import *
 from amaranth.lib import wiring
 from amaranth.lib.wiring import In, Out
 from amaranth.sim import Simulator, Period
 from amaranth.back import verilog
+from typing import List, Tuple
+from amaranth import Signal, Module, Elaboratable, ClockSignal, ResetSignal, ClockDomain
+from amaranth.build import Platform
+# from amaranth.asserts import Past, Initial, Rose
+from amaranth.hdl import Assume, Assert, Cover
+from util import main
+
 
 ###############
 # Main module #
@@ -44,8 +52,30 @@ class template(wiring.Component):
                 m.d.sync += self.count.eq(0)
             with m.Else():
                 m.d.sync += self.count.eq(self.count + 1)
-
+        
         return m
+
+    @classmethod
+    def formal(cls) -> Tuple[Module, List[Signal]]:
+        """Formal verification for the template module."""
+        m = Module()
+        # Instantiate your module with a specific limit for formal verification
+        m.submodules.template = template = cls(limit=16)
+
+        # --- Formal Properties ---
+
+        m.d.comb += Cover(template.count == 0)
+        m.d.comb += Cover(template.count == template.limit)
+        m.d.comb += Cover(template.ovf == 1)
+
+        # Return the module 'm' (which contains 'c' as a submodule)
+        # and the ports of your counter module 'c'.
+        return m, [template.en, template.count, template.ovf]
+
+    
+##############
+# Simulation #
+##############
 # --- TEST ---
 dut = template(25)
 async def bench(ctx):
@@ -66,20 +96,21 @@ async def bench(ctx):
     # The overflow should clear in one cycle.
     await ctx.tick()
     assert not ctx.get(dut.ovf)
-
-##############
-# Simulation #
-##############
+    
 sim = Simulator(dut)
 sim.add_clock(Period(MHz=1))
 sim.add_testbench(bench)
 with sim.write_vcd("template.vcd"):
     sim.run()
+
+##############
+# Conversion #
+##############
 # --- CONVERT ---
 top = template(25)
 with open("template.v", "w") as f:
     f.write(verilog.convert(top))
 
-#######################
-# Formal Verification #
-#######################
+
+if __name__ == "__main__":
+    main(template)
