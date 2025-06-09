@@ -11,9 +11,9 @@
     # Copy original rtl here
     cp ${PWD}/../../../rtl/template.v .
 
-    # Append `define MCY after `timescale 1ps/1ps
-    sed '/\`timescale 1ps\/1ps/a \
-    \`define MCY' template.v > template_temp.v
+    # Append `define MCY after `timescale 1ps/1ps to template.v using awk
+    awk '1;/`timescale 1ps\/1ps/{print "`define MCY"}' template.v > template_temp.v
+    mv template_temp.v template.v
 
     #replace the orginal testbench file with the temp file.
     mv template_temp.v template.v
@@ -21,11 +21,8 @@
     # Copy template here
     cp ${PWD}/../../simulation/icarus/template/testbench.v .
 
-    # Append `define MCY after `timescale 1ps/1ps
-    sed '/\`timescale 1ps\/1ps/a \
-    \`define MCY' testbench.v > testbench_temp.v
-
-    #replace the orginal testbench file with the temp file.
+    # Append `define MCY after `timescale 1ps/1ps to testbench.v using awk
+    awk '1;/`timescale 1ps\/1ps/{print "`define MCY"}' testbench.v > testbench_temp.v
     mv testbench_temp.v testbench.v
 
     # Move create scripts to $SCRIPTS
