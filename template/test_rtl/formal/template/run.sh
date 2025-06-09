@@ -34,7 +34,7 @@ if [[ "$OS" == "Darwin" ]]; then
   gsed "/endmodule/e cat $FORMAL_FILE" "$ORIGINAL_FILE" > "$TEMP_FILE"
 elif [[ "$OS" == "Linux" ]]; then
   # Linux
-  sed "/endmodule/e cat $FORMAL_FILE" "$ORIGINAL_FILE" > "$TEMP_FILE"
+  awk -v f_file="$FORMAL_FILE" '/endmodule/{system("cat " f_file); print; next}1' "$ORIGINAL_FILE" > "$TEMP_FILE"
 else
   echo "        [SBY] ERROR: Unsupported OS"
   exit 1
