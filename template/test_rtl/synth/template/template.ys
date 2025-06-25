@@ -4,7 +4,7 @@
 read_verilog template.v
 
 # Synthesize the design
-synth -top template
+synth_gowin -top template -json template.json
 
 # Generate a simple netlist graph (for visualization)
 # This is done every iteration.
