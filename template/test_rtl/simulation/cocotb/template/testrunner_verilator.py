@@ -17,7 +17,7 @@ def test_my_design_runner():
         hdl_toplevel="template",
     )
 
-    runner.test(hdl_toplevel="template", test_module="testbench,")
+    runner.test(hdl_toplevel="template", test_module="testbench")
 
 
 if __name__ == "__main__":

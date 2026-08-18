@@ -47,12 +47,7 @@ clean:
 $(OBJ_DIR)/V$(OUTPUT_NAME).mk: $(RTL_DESIGN_TOP_MODULE)
 	@echo "        [MAKE] Compiling Verilog RTL to C++ with Verilator..."
 	@mkdir -p $(OBJ_DIR)
-	# Verilator command:
-	# -cc: Generate C++ output.
-	# --trace: Enable waveform tracing.
-	# --Mdir $(OBJ_DIR): Specify output directory.
-	# --no-sc: Crucial for disabling SystemC integration, preventing sc_time_stamp() linkage issues.
-	verilator --cc --trace --Mdir $(OBJ_DIR) --no-sc $(RTL_DESIGN_TOP_MODULE)
+	verilator --cc --trace --Mdir $(OBJ_DIR) $(RTL_DESIGN_TOP_MODULE)
 
 # --- C++ Compilation and Linking Rule (Build Executable) ---
 # This rule builds the final simulation executable by directly invoking g++.

@@ -1,0 +1,6 @@
+*.vcd
+*.v
+*.il
+step1/
+template_bmc/
+template_cover/
