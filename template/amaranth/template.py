@@ -53,6 +53,28 @@ class template(wiring.Component):
             with m.Else():
                 m.d.sync += self.count.eq(self.count + 1)
         
+        # --- Native Manta Logic Analyzer Integration (Optional) ---
+        # To enable, uncomment the code below. Install manta first: pip install manta-fpga
+        #
+        # if platform is not None:
+        #     from manta import Manta, LogicAnalyzer, UartTransport
+        #
+        #     # 1. Instantiate the logic analyzer core to probe internal signals
+        #     la = LogicAnalyzer(depth=1024, probes=[
+        #         self.en,
+        #         self.count,
+        #         self.ovf
+        #     ])
+        #
+        #     # 2. Get UART pins defined by the board platform
+        #     uart_pins = platform.request("uart", 0)
+        #
+        #     # 3. Add the Manta core as a submodule with UART transport bridge
+        #     m.submodules.manta = Manta(
+        #         cores=[la],
+        #         transport=UartTransport(pins=uart_pins, baudrate=115200)
+        #     )
+        
         return m
 
     @classmethod
